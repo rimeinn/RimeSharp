@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using System.Text;
 
 namespace RimeSharp
 {
@@ -74,7 +73,7 @@ namespace RimeSharp
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool GetCurrentSchema(RimeSessionId sessionId,
-        StringBuilder schemaId,
+        [Out] char[] schemaId,
         int bufferSize);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -303,11 +302,10 @@ namespace RimeSharp
 
         public string GetCurrentSchema(RimeSessionId sessionId)
         {
-            var bufferSize = 256;
-            var buffer = new StringBuilder(bufferSize);
-            if (_api.GetCurrentSchema(sessionId, buffer, bufferSize))
+            var buffer = new char[256];
+            if (_api.GetCurrentSchema(sessionId, buffer, buffer.Length))
             {
-                return buffer.ToString();
+                return new string(buffer);
             }
             return "";
         }
