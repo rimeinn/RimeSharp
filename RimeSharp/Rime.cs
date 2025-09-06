@@ -130,87 +130,6 @@ namespace RimeSharp
             _api = Marshal.PtrToStructure<RimeAPI>(apiPtr);
         }
 
-        public sealed class Commit : Disposable<RimeCommit>
-        {
-            internal Commit(ref RimeCommit commit) :
-                base(ref commit, (ref RimeCommit v) => Instance()._api.FreeCommit(ref v))
-            { }
-
-            public string? Text { get => value.Text; }
-        }
-
-        public record class Composition
-        {
-            private RimeComposition _composition;
-            internal Composition(ref RimeComposition composition)
-            {
-                _composition = composition;
-            }
-            public int Length { get => _composition.Length; }
-            public int CursorPos { get => _composition.CursorPos; }
-            public int SelStart { get => _composition.SelStart; }
-            public int SelEnd { get => _composition.SelEnd; }
-            public string? Preedit { get => _composition.Preedit; }
-        }
-
-        public record class Menu
-        {
-            private RimeMenu _menu;
-            internal Menu(ref RimeMenu menu)
-            {
-                _menu = menu;
-            }
-            public int PageSize { get => _menu.PageSize; }
-            public int PageNo { get => _menu.PageNo; }
-            public bool IsLastPage { get => _menu.IsLastPage; }
-            public int HighlightedCandidateIndex { get => _menu.HighlightedCandidateIndex; }
-            public CandidateItem[] Candidates
-            {
-                get
-                {
-                    var size = Marshal.SizeOf<RimeCandidate>();
-                    var candidates = new CandidateItem[_menu.NumCandidates];
-                    var ptr = _menu.Candidates;
-                    for (var i = 0; i < _menu.NumCandidates; ++i)
-                    {
-                        var candidate = Marshal.PtrToStructure<RimeCandidate>(ptr + i * size);
-                        candidates[i] = new CandidateItem(candidate.Text, candidate.Comment);
-                    }
-                    return candidates;
-                }
-            }
-            public string SelectKeys { get => _menu.SelectKeys; }
-        }
-
-        public sealed class Context : Disposable<RimeContext>
-        {
-            internal Context(ref RimeContext context) :
-                base(ref context, (ref RimeContext v) => Instance()._api.FreeContext(ref v))
-            { }
-
-            public Composition Composition { get => new(ref value.Composition); }
-            public Menu Menu { get => new(ref value.Menu); }
-            public string? CommitTextPreview { get => value.CommitTextPreview; }
-            public string[]? SelectLabels { get => value.SelectLabels; }
-        }
-
-        public sealed class Status : Disposable<RimeStatus>
-        {
-            internal Status(ref RimeStatus status) :
-                base(ref status, (ref RimeStatus v) => Instance()._api.FreeStatus(ref v))
-            { }
-
-            public string? SchemaId { get => value.SchemaId; }
-            public string? SchemaName { get => value.SchemaName; }
-            public bool IsDisabled { get => value.IsDisabled; }
-            public bool IsComposing { get => value.IsComposing; }
-            public bool IsAsciiMode { get => value.IsAsciiMode; }
-            public bool IsFullShape { get => value.IsFullShape; }
-            public bool IsSimplified { get => value.IsSimplified; }
-            public bool IsTraditional { get => value.IsTraditional; }
-            public bool IsAsciiPunct { get => value.IsAsciiPunct; }
-        }
-
         public static Rime Instance() => s_instance.Value;
 
         public void Setup(ref RimeTraits traits) => _api.Setup(ref traits);
@@ -232,26 +151,32 @@ namespace RimeSharp
 
         public bool DestroySession(RimeSessionId sessionId) => _api.DestroySession(sessionId);
 
-        public Commit GetCommit(RimeSessionId sessionId)
+        public RimeCommit GetCommit(RimeSessionId sessionId)
         {
             var commit = new RimeCommit();
             _api.GetCommit(sessionId, ref commit);
-            return new Commit(ref commit);
+            return commit;
         }
 
-        public Context GetContext(RimeSessionId sessionId)
+        internal bool FreeCommit(ref RimeCommit commit) => _api.FreeCommit(ref commit); 
+
+        public RimeContext GetContext(RimeSessionId sessionId)
         {
             var context = new RimeContext();
             _api.GetContext(sessionId, ref context);
-            return new Context(ref context);
+            return context;
         }
 
-        public Status GetStatus(RimeSessionId sessionId)
+        internal bool FreeContext(ref RimeContext context) => _api.FreeContext(ref context);
+
+        public RimeStatus GetStatus(RimeSessionId sessionId)
         {
             var status = new RimeStatus();
             _api.GetStatus(sessionId, ref status);
-            return new Status(ref status);
+            return status;
         }
+
+        internal bool FreeStatus(ref RimeStatus status) => _api.FreeStatus(ref status);
 
         public void SetOption(RimeSessionId sessionId, string option, bool value)
             => _api.SetOption(sessionId, option, value);

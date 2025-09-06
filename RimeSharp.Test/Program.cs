@@ -2,7 +2,7 @@
 {
     internal class Program
     {
-        static void PrintStatus(in Rime.Status status)
+        static void PrintStatus(in RimeStatus status)
         {
             Console.WriteLine($"schema: {status.SchemaId} / {status.SchemaName}");
             Console.Write("status: ");
@@ -16,10 +16,10 @@
                 Console.Write("full_shape ");
             if (status.IsSimplified)
                 Console.Write("simplified ");
-            System.Console.WriteLine();
+            Console.WriteLine();
         }
 
-        static void PrintCompostion(in Rime.Composition composition)
+        static void PrintCompostion(in RimeComposition composition)
         {
             var preedit = composition.Preedit;
             if (preedit == null)
@@ -52,7 +52,7 @@
             }
             Console.WriteLine();
         }
-        static void PrintMenu(in Rime.Menu menu)
+        static void PrintMenu(in RimeMenu menu)
         {
             var candidates = menu.Candidates;
             if (candidates.Length == 0)
@@ -67,9 +67,9 @@
                     candidates[i].Comment);
             }
         }
-        static void PrintContext(in Rime.Context context)
+        static void PrintContext(in RimeContext context)
         {
-            if (context.Composition.Length > 0 || context.Menu.Candidates.Length > 0)
+            if (context.Composition.Length > 0 || context.Menu.NumCandidates > 0)
             {
                 PrintCompostion(context.Composition);
             }
