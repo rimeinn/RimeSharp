@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace RimeSharp
 {
@@ -173,11 +174,22 @@ namespace RimeSharp
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RimeStringSlice
+    public readonly struct RimeStringSlice
     {
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? Str;
-        public ulong Length;
+        private readonly IntPtr _str;
+        private readonly UIntPtr _length;
+
+        public string? AsString()
+        {
+            var len = (int)_length.ToUInt32();
+            if (len <= 0)
+            {
+                return null;
+            }
+            var bytes = new byte[len];
+            Marshal.Copy(_str, bytes, 0, len);
+            return Encoding.UTF8.GetString(bytes);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

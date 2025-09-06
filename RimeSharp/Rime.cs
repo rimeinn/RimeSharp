@@ -105,7 +105,7 @@ namespace RimeSharp
     internal delegate void CandidateListEnd(ref RimeCandidateListIterator iterator);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate IntPtr GetStateLabelAbbr(RimeSessionId sessionId,
+    internal delegate RimeStringSlice GetStateLabelAbbr(RimeSessionId sessionId,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string optionName,
         bool state,
         bool abbreviated);
@@ -251,11 +251,7 @@ namespace RimeSharp
         }
 
         public string? GetStateLabel(RimeSessionId sessionId, string optionName, bool state, bool abbreviated = false)
-        {
-            var ptr = _api.GetStateLabelAbbreviated(sessionId, optionName, state, abbreviated);
-            var slice = Marshal.PtrToStructure<RimeStringSlice>(ptr);
-            return slice.Str;
-        }
+            => _api.GetStateLabelAbbreviated(sessionId, optionName, state, abbreviated).AsString();
 
         public bool ChangePage(RimeSessionId sessionId, bool backward)
             => _api.ChangePage(sessionId, backward);
