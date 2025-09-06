@@ -58,12 +58,12 @@ namespace RimeSharp
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void SetOption(RimeSessionId sessionId,
-        [MarshalAs(UnmanagedType.LPStr)] string option,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string option,
         bool value);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool GetOption(RimeSessionId sessionId,
-        [MarshalAs(UnmanagedType.LPStr)] string option);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string option);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool GetSchemaList(out RimeSchemaList list);
@@ -78,15 +78,15 @@ namespace RimeSharp
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SelectSchema(RimeSessionId sessionId,
-        [MarshalAs(UnmanagedType.LPStr)] string schemaId);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string schemaId);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SimulateKeySequence(RimeSessionId sessionId,
-        [MarshalAs(UnmanagedType.LPStr)] string keySequence);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string keySequence);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate IntPtr FindModule(
-        [MarshalAs(UnmanagedType.LPStr)] string moduleName);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string moduleName);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate IntPtr GetAPI();
@@ -106,7 +106,7 @@ namespace RimeSharp
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate IntPtr GetStateLabelAbbr(RimeSessionId sessionId,
-        [MarshalAs(UnmanagedType.LPStr)] string optionName,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string optionName,
         bool state,
         bool abbreviated);
 

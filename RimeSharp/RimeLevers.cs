@@ -4,8 +4,8 @@ namespace RimeSharp
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate nint CustomSettingsInit(
-        [MarshalAs(UnmanagedType.LPStr)] string configId,
-        [MarshalAs(UnmanagedType.LPStr)] string generatorId);
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string configId,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string generatorId);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate nint SwitcerSettingsInit();

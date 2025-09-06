@@ -6,26 +6,26 @@ namespace RimeSharp
     public struct RimeTraits
     {
         private readonly int _dataSize;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? SharedDataDir;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? UserDataDir;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? DistributionName;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? DistributionCodeName;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? DistributionVersion;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? AppName;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? Modules;
         public int MinLogLevel;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? LogDir;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? PrebuiltDataDir;
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? StagingDir;
 
         public RimeTraits()
