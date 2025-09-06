@@ -113,7 +113,7 @@ namespace RimeSharp
         public bool IsDisabled;
         public bool IsComposing;
         public bool IsAsciiMode;
-        public bool isFullShape;
+        public bool IsFullShape;
         public bool IsSimplified;
         public bool IsTraditional;
         public bool IsAsciiPunct;
@@ -165,8 +165,11 @@ namespace RimeSharp
         private readonly int _dataSize;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string ModuleName;
-        public IntPtr Initialize;
-        public IntPtr Finalize;
-        public IntPtr GetAPI;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public DVoid Initialize;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public DVoid Finalize;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public GetAPI GetAPI;
     }
 }

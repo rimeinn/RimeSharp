@@ -15,7 +15,7 @@ namespace RimeSharp
     );
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void DVoid();
+    public delegate void DVoid();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool DBool();
@@ -85,11 +85,11 @@ namespace RimeSharp
         [MarshalAs(UnmanagedType.LPStr)] string keySequence);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate nint FindModule(
+    internal delegate IntPtr FindModule(
         [MarshalAs(UnmanagedType.LPStr)] string moduleName);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate nint GetAPI();
+    public delegate IntPtr GetAPI();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SelectCandidate(RimeSessionId sessionId, int index);
@@ -205,32 +205,10 @@ namespace RimeSharp
             public bool IsDisabled { get => value.IsDisabled; }
             public bool IsComposing { get => value.IsComposing; }
             public bool IsAsciiMode { get => value.IsAsciiMode; }
-            public bool IsFullShape { get => value.isFullShape; }
+            public bool IsFullShape { get => value.IsFullShape; }
             public bool IsSimplified { get => value.IsSimplified; }
             public bool IsTraditional { get => value.IsTraditional; }
             public bool IsAsciiPunct { get => value.IsAsciiPunct; }
-        }
-
-        public sealed class Module
-        {
-            private readonly RimeModule _module;
-            private readonly DVoid _initialize;
-            private readonly DVoid _finalize;
-            private readonly GetAPI _getAPI;
-
-            internal Module(ref RimeModule module)
-            {
-                _module = module;
-                _initialize = Marshal.GetDelegateForFunctionPointer<DVoid>(_module.Initialize);
-                _finalize = Marshal.GetDelegateForFunctionPointer<DVoid>(_module.Finalize);
-                _getAPI = Marshal.GetDelegateForFunctionPointer<GetAPI>(_module.GetAPI);
-            }
-            public string ModuleName { get => _module.ModuleName; }
-
-            public void Initialize() => _initialize();
-            public void Finalize1() => _finalize();
-
-            public nint GetAPI() => _getAPI();
         }
 
         public static Rime Instance() => s_instance.Value;
@@ -316,13 +294,12 @@ namespace RimeSharp
         public bool SimulateKeySequence(RimeSessionId sessionId, string keySequence)
             => _api.SimulateKeySequence(sessionId, keySequence);
 
-        public Module FindModule(string moduleName)
+        public RimeModule FindModule(string moduleName)
         {
             var ptr = _api.FindModule(moduleName);
             if (ptr != IntPtr.Zero)
             {
-                var module = Marshal.PtrToStructure<RimeModule>(ptr);
-                return new Module(ref module);
+                return Marshal.PtrToStructure<RimeModule>(ptr);
             }
             throw new InvalidOperationException($"Module '{moduleName}' not found.");
         }
@@ -498,6 +475,6 @@ namespace RimeSharp
         private const string RimeDll = "rime.dll";
 
         [DllImport(RimeDll, EntryPoint = "rime_get_api", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint GetRimeAPI();
+        internal static extern IntPtr GetRimeAPI();
     }
 }
