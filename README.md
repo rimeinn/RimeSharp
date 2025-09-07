@@ -10,7 +10,9 @@
 
 - [x] Windows
 - [ ] macOS
-- [ ] Linux
+- [x] Linux
+
+Theoretically, RimeSharp supports macOS, but there has been no actual test.
 
 ## Test and Demo
 
