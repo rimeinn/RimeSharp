@@ -52,7 +52,7 @@ namespace RimeSharp.Test
             }
             Console.WriteLine();
         }
-        static void PrintMenu(in RimeMenu menu)
+        static void PrintMenu(in RimeMenu menu, string[] selectLabels)
         {
             var candidates = menu.Candidates;
             if (candidates.Length == 0)
@@ -62,7 +62,7 @@ namespace RimeSharp.Test
             for (var i = 0; i < candidates.Length; ++i)
             {
                 bool highlighted = i == menu.HighlightedCandidateIndex;
-                Console.WriteLine($"{i + 1}. " + (highlighted ? "[" : " ") +
+                Console.WriteLine($"{selectLabels[i]}. " + (highlighted ? "[" : " ") +
                     candidates[i].Text + (highlighted ? "]" : " ") +
                     candidates[i].Comment);
             }
@@ -77,7 +77,7 @@ namespace RimeSharp.Test
             {
                 Console.WriteLine("(not composing)");
             }
-            PrintMenu(context.Menu);
+            PrintMenu(context.Menu, context.SelectLabels);
         }
 
         static void Print(UIntPtr sessionId)

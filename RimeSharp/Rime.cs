@@ -250,7 +250,7 @@ namespace RimeSharp
             return [.. candidates];
         }
 
-        public string? GetStateLabel(RimeSessionId sessionId, string optionName, bool state, bool abbreviated = false)
+        public string GetStateLabel(RimeSessionId sessionId, string optionName, bool state, bool abbreviated = false)
             => _api.GetStateLabelAbbreviated(sessionId, optionName, state, abbreviated).AsString();
 
         public bool ChangePage(RimeSessionId sessionId, bool backward)

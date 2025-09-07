@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace RimeSharp
 {
@@ -111,8 +110,22 @@ namespace RimeSharp
         public RimeMenu Menu;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? CommitTextPreview;
-        [MarshalAs(UnmanagedType.SafeArray)]
-        public string[]? SelectLabels;
+        private readonly IntPtr _selectLabels;
+
+        public string[] SelectLabels
+        {
+            get
+            {
+                var length = Menu.NumCandidates;
+                var result = new string[length];
+                for (var i = 0; i < length; ++i)
+                {
+                    var ptr = Marshal.ReadIntPtr(_selectLabels, i * IntPtr.Size);
+                    result[i] = UTF8Marshal.PtrToStringUTF8(ptr);
+                }
+                return result;
+            }
+        }
 
         public RimeContext()
         {
@@ -179,17 +192,7 @@ namespace RimeSharp
         private readonly IntPtr _str;
         private readonly UIntPtr _length;
 
-        public string? AsString()
-        {
-            var len = (int)_length.ToUInt32();
-            if (len <= 0)
-            {
-                return null;
-            }
-            var bytes = new byte[len];
-            Marshal.Copy(_str, bytes, 0, len);
-            return Encoding.UTF8.GetString(bytes);
-        }
+        public string AsString() => UTF8Marshal.PtrToStringUTF8(_str, (int)_length.ToUInt32());
     }
 
     [StructLayout(LayoutKind.Sequential)]
