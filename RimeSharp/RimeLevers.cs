@@ -64,25 +64,24 @@ namespace RimeSharp
         {
             public override bool IsInvalid => handle == IntPtr.Zero;
 
-            private SchemaListItem[] GetSchemaList(SchemaListAccess access)
+            private RimeSchemaListItem[] GetSchemaList(SchemaListAccess access)
             {
                 if (!access(handle, out var list)) return [];
                 var size = Marshal.SizeOf<RimeSchemaListItem>();
-                var items = new SchemaListItem[(int)list.Size];
+                var items = new RimeSchemaListItem[(int)list.Size];
                 for (var i = 0; i < (int)list.Size; ++i)
                 {
                     var ptr = IntPtr.Add(list.List, i * size);
-                    var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
-                    items[i] = new SchemaListItem(item.SchemaId, item.Name);
+                    items[i] = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
                 }
                 Instance()._levers.SchemaListDestroy(ref list);
                 return items;
             }
 
-            public SchemaListItem[] GetAvailableSchemaList()
+            public RimeSchemaListItem[] GetAvailableSchemaList()
                 => GetSchemaList(Instance()._levers.GetAvailableSchemaList);
 
-            public SchemaListItem[] GetSelectedSchemaList()
+            public RimeSchemaListItem[] GetSelectedSchemaList()
                 => GetSchemaList(Instance()._levers.GetSelectedSchemaList);
 
             public bool SelectSchemas(string[] schemaIdList)

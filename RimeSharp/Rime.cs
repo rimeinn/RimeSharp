@@ -184,16 +184,15 @@ namespace RimeSharp
         public bool GetOption(RimeSessionId sessionId, string option)
             => _api.GetOption(sessionId, option);
 
-        public SchemaListItem[] GetSchemaList()
+        public RimeSchemaListItem[] GetSchemaList()
         {
             if (!_api.GetSchemaList(out var list)) return [];
             var size = Marshal.SizeOf<RimeSchemaListItem>();
-            var items = new SchemaListItem[(int)list.Size];
+            var items = new RimeSchemaListItem[(int)list.Size];
             for (var i = 0; i < (int)list.Size; ++i)
             {
                 var ptr = IntPtr.Add(list.List, i * size);
-                var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
-                items[i] = new SchemaListItem(item.SchemaId, item.Name);
+                items[i] = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
             }
             _api.FreeSchemaList(ref list);
             return items;
@@ -222,16 +221,15 @@ namespace RimeSharp
         public bool SelectCandidate(RimeSessionId sessionId, int index, bool paged = false)
             => paged ? _api.SelectCandidateOnCurrentPage(sessionId, index) : _api.SelectCandidate(sessionId, index);
 
-        public CandidateItem[] GetCandidates(RimeSessionId sessionId, int start = 0, int count = int.MaxValue)
+        public RimeCandidate[] GetCandidates(RimeSessionId sessionId, int start = 0, int count = int.MaxValue)
         {
             var iterator = new RimeCandidateListIterator();
             if (!_api.CandidateListFromIndex(sessionId, ref iterator, start)) return [];
-            var candidates = new List<CandidateItem>();
+            var candidates = new List<RimeCandidate>();
             var i = 0;
             while (i < count && _api.CandidateListNext(ref iterator))
             {
-                var candidate = iterator.Candidate;
-                candidates.Add(new CandidateItem(candidate.Text, candidate.Comment));
+                candidates.Add(iterator.Candidate);
                 ++i;
             }
             _api.CandidateListEnd(ref iterator);

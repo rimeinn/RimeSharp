@@ -52,7 +52,7 @@ namespace RimeSharp
         public string Text;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string? Comment;
-        public UIntPtr Reserved;
+        private readonly UIntPtr _reserved;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -67,16 +67,15 @@ namespace RimeSharp
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string SelectKeys;
 
-        public readonly CandidateItem[] Candidates
+        public readonly RimeCandidate[] Candidates
         {
             get
             {
                 var size = Marshal.SizeOf<RimeCandidate>();
-                var result = new CandidateItem[NumCandidates];
+                var result = new RimeCandidate[NumCandidates];
                 for (var i = 0; i < NumCandidates; ++i)
                 {
-                    var candidate = Marshal.PtrToStructure<RimeCandidate>(_candidates + i * size);
-                    result[i] = new CandidateItem(candidate.Text, candidate.Comment);
+                    result[i] = Marshal.PtrToStructure<RimeCandidate>(_candidates + i * size);
                 }
                 return result;
             }
@@ -176,7 +175,7 @@ namespace RimeSharp
         public string SchemaId;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string Name;
-        public UIntPtr Reserved;
+        private readonly UIntPtr _reserved;
     }
 
     [StructLayout(LayoutKind.Sequential)]
