@@ -391,9 +391,9 @@ namespace RimeSharp
         public ChangePage ChangePage;
     }
 
-    internal partial class Native
+    internal static class Native
     {
-        private const string RimeDll = "rime.dll";
+        private const string RimeDll = "rime";
 
         [DllImport(RimeDll, EntryPoint = "rime_get_api", CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetRimeAPI();
