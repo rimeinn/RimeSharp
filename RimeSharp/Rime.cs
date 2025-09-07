@@ -158,7 +158,7 @@ namespace RimeSharp
             return commit;
         }
 
-        internal bool FreeCommit(ref RimeCommit commit) => _api.FreeCommit(ref commit); 
+        internal bool FreeCommit(ref RimeCommit commit) => _api.FreeCommit(ref commit);
 
         public RimeContext GetContext(RimeSessionId sessionId)
         {
@@ -186,31 +186,24 @@ namespace RimeSharp
 
         public SchemaListItem[] GetSchemaList()
         {
-
-            if (_api.GetSchemaList(out var list))
+            if (!_api.GetSchemaList(out var list)) return [];
+            var size = Marshal.SizeOf<RimeSchemaListItem>();
+            var items = new SchemaListItem[(int)list.Size];
+            for (var i = 0; i < (int)list.Size; ++i)
             {
-                var size = Marshal.SizeOf<RimeSchemaListItem>();
-                var items = new SchemaListItem[(int)list.Size];
-                for (var i = 0; i < (int)list.Size; ++i)
-                {
-                    var ptr = IntPtr.Add(list.List, i * size);
-                    var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
-                    items[i] = new SchemaListItem(item.SchemaId, item.Name);
-                }
-                _api.FreeSchemaList(ref list);
-                return items;
+                var ptr = IntPtr.Add(list.List, i * size);
+                var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
+                items[i] = new SchemaListItem(item.SchemaId, item.Name);
             }
-            return [];
+            _api.FreeSchemaList(ref list);
+            return items;
         }
 
         public string GetCurrentSchema(RimeSessionId sessionId)
         {
             var buffer = new char[256];
-            if (_api.GetCurrentSchema(sessionId, buffer, buffer.Length))
-            {
-                return new string(buffer);
-            }
-            return "";
+            return _api.GetCurrentSchema(sessionId, buffer, buffer.Length)
+                ? new string(buffer) : string.Empty;
         }
 
         public bool SelectSchema(RimeSessionId sessionId, string schemaId)
@@ -222,11 +215,8 @@ namespace RimeSharp
         public RimeModule FindModule(string moduleName)
         {
             var ptr = _api.FindModule(moduleName);
-            if (ptr != IntPtr.Zero)
-            {
-                return Marshal.PtrToStructure<RimeModule>(ptr);
-            }
-            throw new InvalidOperationException($"Module '{moduleName}' not found.");
+            return ptr != IntPtr.Zero ? Marshal.PtrToStructure<RimeModule>(ptr)
+                : throw new InvalidOperationException($"Module '{moduleName}' not found.");
         }
 
         public bool SelectCandidate(RimeSessionId sessionId, int index, bool paged = false)
@@ -235,18 +225,16 @@ namespace RimeSharp
         public CandidateItem[] GetCandidates(RimeSessionId sessionId, int start = 0, int count = int.MaxValue)
         {
             var iterator = new RimeCandidateListIterator();
+            if (!_api.CandidateListFromIndex(sessionId, ref iterator, start)) return [];
             var candidates = new List<CandidateItem>();
-            if (_api.CandidateListFromIndex(sessionId, ref iterator, start))
+            var i = 0;
+            while (i < count && _api.CandidateListNext(ref iterator))
             {
-                int i = 0;
-                while (i < count && _api.CandidateListNext(ref iterator))
-                {
-                    var candidate = iterator.Candidate;
-                    candidates.Add(new CandidateItem(candidate.Text, candidate.Comment));
-                    ++i;
-                };
-                _api.CandidateListEnd(ref iterator);
+                var candidate = iterator.Candidate;
+                candidates.Add(new CandidateItem(candidate.Text, candidate.Comment));
+                ++i;
             }
+            _api.CandidateListEnd(ref iterator);
             return [.. candidates];
         }
 

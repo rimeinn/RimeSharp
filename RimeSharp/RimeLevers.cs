@@ -42,8 +42,7 @@ namespace RimeSharp
 
         public class CustomSettings : SafeHandle
         {
-
-            public CustomSettings(nint ptr) : base(ptr, true) { }
+            protected CustomSettings(IntPtr ptr) : base(ptr, true) { }
             public CustomSettings(string configId, string generatorId) :
                 base(Instance()._levers.CustomSettingsInit(configId, generatorId), true)
             { }
@@ -61,28 +60,23 @@ namespace RimeSharp
             }
         }
 
-        public class SwitcherSettings : CustomSettings
+        public class SwitcherSettings() : CustomSettings(Instance()._levers.SwitcherSettingsInit())
         {
-            public SwitcherSettings() : base(Instance()._levers.SwitcherSettingsInit()) { }
-
             public override bool IsInvalid => handle == IntPtr.Zero;
 
             private SchemaListItem[] GetSchemaList(SchemaListAccess access)
             {
-                if (access(handle, out var list))
+                if (!access(handle, out var list)) return [];
+                var size = Marshal.SizeOf<RimeSchemaListItem>();
+                var items = new SchemaListItem[(int)list.Size];
+                for (var i = 0; i < (int)list.Size; ++i)
                 {
-                    var size = Marshal.SizeOf<RimeSchemaListItem>();
-                    var items = new SchemaListItem[(int)list.Size];
-                    for (var i = 0; i < (int)list.Size; ++i)
-                    {
-                        var ptr = IntPtr.Add(list.List, i * size);
-                        var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
-                        items[i] = new SchemaListItem(item.SchemaId, item.Name);
-                    }
-                    Instance()._levers.SchemaListDestroy(ref list);
-                    return items;
+                    var ptr = IntPtr.Add(list.List, i * size);
+                    var item = Marshal.PtrToStructure<RimeSchemaListItem>(ptr);
+                    items[i] = new SchemaListItem(item.SchemaId, item.Name);
                 }
-                return [];
+                Instance()._levers.SchemaListDestroy(ref list);
+                return items;
             }
 
             public SchemaListItem[] GetAvailableSchemaList()
