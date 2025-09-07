@@ -1,4 +1,4 @@
-﻿namespace RimeSharp.Test
+namespace RimeSharp.Test
 {
     internal class Program
     {

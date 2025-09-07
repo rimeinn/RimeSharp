@@ -1,4 +1,4 @@
-﻿namespace RimeSharp
+namespace RimeSharp
 {
     public record class CandidateItem
     {
