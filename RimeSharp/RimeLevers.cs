@@ -8,10 +8,10 @@ namespace RimeSharp
         [MarshalAs(UnmanagedType.LPUTF8Str)] string generatorId);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate nint SwitcerSettingsInit();
+    internal delegate nint SwitcherSettingsInit();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void CustomSettingsDestory(nint ptr);
+    internal delegate void CustomSettingsDestroy(nint ptr);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool CustomSettingsAccess(nint ptr);
@@ -111,7 +111,7 @@ namespace RimeSharp
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public CustomSettingsInit CustomSettingsInit;
         [MarshalAs(UnmanagedType.FunctionPtr)]
-        public CustomSettingsDestory CustomSettingsDestroy;
+        public CustomSettingsDestroy CustomSettingsDestroy;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public CustomSettingsAccess LoadSettings;
         [MarshalAs(UnmanagedType.FunctionPtr)]
@@ -124,7 +124,7 @@ namespace RimeSharp
         public IntPtr SettingsIsModified;
         public IntPtr SettingsGetConfig;
         [MarshalAs(UnmanagedType.FunctionPtr)]
-        public SwitcerSettingsInit SwitcherSettingsInit;
+        public SwitcherSettingsInit SwitcherSettingsInit;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public SchemaListAccess GetAvailableSchemaList;
         [MarshalAs(UnmanagedType.FunctionPtr)]

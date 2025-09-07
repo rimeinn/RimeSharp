@@ -19,7 +19,7 @@ namespace RimeSharp.Test
             Console.WriteLine();
         }
 
-        static void PrintCompostion(in RimeComposition composition)
+        static void PrintComposition(in RimeComposition composition)
         {
             var preedit = composition.Preedit;
             if (preedit == null)
@@ -71,7 +71,7 @@ namespace RimeSharp.Test
         {
             if (context.Composition.Length > 0 || context.Menu.NumCandidates > 0)
             {
-                PrintCompostion(context.Composition);
+                PrintComposition(context.Composition);
             }
             else
             {
