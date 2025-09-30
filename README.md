@@ -1,5 +1,8 @@
 # RimeSharp
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rimeinn/RimeSharp/dotnet.yml)
+
+
 **A C# binding brings all the might and delight of [RIME](https://github.com/rime/librime) Input Method Engine to the managed world of .NET**
 
 ## Target Frameworks
