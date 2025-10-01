@@ -24,5 +24,16 @@ namespace RimeSharp
             Marshal.Copy(ptr, bytes, 0, length);
             return Encoding.UTF8.GetString(bytes);
         }
+
+        internal static IntPtr StringToHGlobalUTF8(string? s)
+        {
+            if (s is null) return IntPtr.Zero;
+            var bytes = Encoding.UTF8.GetBytes(s);
+            Array.Resize(ref bytes, bytes.Length + 1);
+            bytes[bytes.Length - 1] = 0; // tailing zero
+            var ptr = Marshal.AllocHGlobal(bytes.Length);
+            Marshal.Copy(bytes, 0, ptr, bytes.Length);
+            return ptr;
+        }
     }
 }

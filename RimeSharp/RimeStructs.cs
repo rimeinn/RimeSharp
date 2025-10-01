@@ -6,27 +6,77 @@ namespace RimeSharp
     public struct RimeTraits
     {
         private readonly int _dataSize;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? SharedDataDir;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? UserDataDir;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? DistributionName;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? DistributionCodeName;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? DistributionVersion;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? AppName;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? Modules;
+        private IntPtr _sharedDataDir;
+        private IntPtr _userDataDir;
+        private IntPtr _distributionName;
+        private IntPtr _distributionCodeName;
+        private IntPtr _distributionVersion;
+        private IntPtr _appName;
+        private IntPtr _modules;
         public int MinLogLevel;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? LogDir;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? PrebuiltDataDir;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string? StagingDir;
+        private IntPtr _logDir;
+        private IntPtr _prebuiltDataDir;
+        private IntPtr _stagingDir;
+
+        public string SharedDataDir
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_sharedDataDir);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+
+        public string UserDataDir
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_userDataDir);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string DistributionName
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_distributionName);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string DistributionCodeName
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_distributionCodeName);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string DistributionVersion
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_distributionVersion);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string AppName
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_appName);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string Modules
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_modules);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string LogDir
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_logDir);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string PrebuiltDataDir
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_prebuiltDataDir);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
+        
+        public string StagingDir
+        {
+            get => UTF8Marshal.PtrToStringUTF8(_stagingDir);
+            set => _sharedDataDir = UTF8Marshal.StringToHGlobalUTF8(value);
+        }
 
         public RimeTraits()
         {
