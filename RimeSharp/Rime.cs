@@ -79,6 +79,44 @@ namespace RimeSharp
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SelectSchema(RimeSessionId sessionId,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string schemaId);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigOpen(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string configId,
+        ref RimeConfig config);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigClose(ref RimeConfig config);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigGetBool(ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key,
+        out bool value);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigGetInt(ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key,
+        out int value);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigGetDouble(ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key,
+        out double value);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate IntPtr ConfigGetCString(ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigBegin(ref RimeConfigIterator iterator,
+        ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigNext(ref RimeConfigIterator iterator);
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool ConfigEnd(ref RimeConfigIterator iterator);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SimulateKeySequence(RimeSessionId sessionId,
@@ -90,6 +128,10 @@ namespace RimeSharp
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate IntPtr GetAPI();
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate UIntPtr ConfigListSize(ref RimeConfig config,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string key);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate bool SelectCandidate(RimeSessionId sessionId, int index);
@@ -208,6 +250,61 @@ namespace RimeSharp
         public bool SelectSchema(RimeSessionId sessionId, string schemaId)
             => _api.SelectSchema(sessionId, schemaId);
 
+        public RimeConfig SchemaOpen(string schemaId)
+        {
+            var config = new RimeConfig();
+            _api.SchemaOpen(schemaId, ref config);
+            return config;
+        }
+
+        public RimeConfig ConfigOpen(string configId)
+        {
+            var config = new RimeConfig();
+            _api.ConfigOpen(configId, ref config);
+            return config;
+        }
+        
+        internal bool ConfigClose(ref RimeConfig config)
+            => _api.ConfigClose(ref config);
+        
+        internal bool? ConfigGetBool(ref RimeConfig config, string key)
+        {
+            return _api.ConfigGetBool(ref config, key, out var value)
+                ? value
+                : null;
+        }
+        
+        internal int? ConfigGetInt(ref RimeConfig config, string key)
+        {
+            return _api.ConfigGetInt(ref config, key, out var value)
+                ? value
+                : null;
+        }
+        
+        internal double? ConfigGetDouble(ref RimeConfig config, string key)
+        {
+            return _api.ConfigGetDouble(ref config, key, out var value)
+                ? value
+                : null;
+        }
+
+        internal string? ConfigGetString(ref RimeConfig config, string key)
+        {
+            var ptr = _api.ConfigGetCString(ref config, key);
+            return ptr != IntPtr.Zero
+                ? UTF8Marshal.PtrToStringUTF8(ptr)
+                : null;
+        }
+        
+        internal bool ConfigBeginMap(ref RimeConfigIterator iterator, ref RimeConfig config, string key)
+            => _api.ConfigBeginMap(ref iterator, ref config, key);
+
+        internal bool ConfigNext(ref RimeConfigIterator iterator)
+            => _api.ConfigNext(ref iterator);
+
+        internal bool ConfigEnd(ref RimeConfigIterator iterator)
+            => _api.ConfigEnd(ref iterator);
+
         public bool SimulateKeySequence(RimeSessionId sessionId, string keySequence)
             => _api.SimulateKeySequence(sessionId, keySequence);
 
@@ -217,6 +314,12 @@ namespace RimeSharp
             return ptr != IntPtr.Zero ? Marshal.PtrToStructure<RimeModule>(ptr)
                 : throw new InvalidOperationException($"Module '{moduleName}' not found.");
         }
+
+        internal uint ConfigListSize(ref RimeConfig config, string key)
+            => _api.ConfigListSize(ref config, key).ToUInt32();
+
+        internal bool ConfigBeginList(ref RimeConfigIterator iterator, ref RimeConfig config, string key)
+            => _api.ConfigBeginList(ref iterator, ref config, key);
 
         public bool SelectCandidate(RimeSessionId sessionId, int index, bool paged = false)
             => paged ? _api.SelectCandidateOnCurrentPage(sessionId, index) : _api.SelectCandidate(sessionId, index);
@@ -303,18 +406,28 @@ namespace RimeSharp
         public GetCurrentSchema GetCurrentSchema;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public SelectSchema SelectSchema;
-        public IntPtr SchemaOpen;
-        public IntPtr ConfigOpen;
-        public IntPtr ConfigClose;
-        public IntPtr ConfigGetBool;
-        public IntPtr ConfigGetInt;
-        public IntPtr ConfigGetDouble;
-        public IntPtr ConfigGetString;
-        public IntPtr ConfigGetCString;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigOpen SchemaOpen;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigOpen ConfigOpen;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigClose ConfigClose;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigGetBool ConfigGetBool;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigGetInt ConfigGetInt;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigGetDouble ConfigGetDouble;
+        public IntPtr ConfigGetString; // unused
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigGetCString ConfigGetCString;
         public IntPtr ConfigUpdateSignature;
-        public IntPtr ConfigBeginMap;
-        public IntPtr ConfigNext;
-        public IntPtr ConfigEnd;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigBegin ConfigBeginMap;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigNext ConfigNext;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigEnd ConfigEnd;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public SimulateKeySequence SimulateKeySequence;
         public IntPtr RegisterModule;
@@ -337,8 +450,10 @@ namespace RimeSharp
         public IntPtr ConfigClear;
         public IntPtr ConfigCreateList;
         public IntPtr ConfigCreateMap;
-        public IntPtr ConfigListSize;
-        public IntPtr ConfigBeginList;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigListSize ConfigListSize;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigBegin ConfigBeginList;
         public IntPtr GetInput;
         public IntPtr getCaretPos;
         [MarshalAs(UnmanagedType.FunctionPtr)]
@@ -352,7 +467,8 @@ namespace RimeSharp
         public CandidateListNext CandidateListNext;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public CandidateListEnd CandidateListEnd;
-        public IntPtr UserConfigOpen;
+        [MarshalAs(UnmanagedType.FunctionPtr)]
+        public ConfigOpen UserConfigOpen;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public CandidateListFromIndex CandidateListFromIndex;
         private readonly IntPtr _getPrebuiltDataDir; // deprecated
