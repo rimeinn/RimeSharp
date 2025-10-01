@@ -167,6 +167,7 @@ namespace RimeSharp
             {
                 var length = Menu.NumCandidates;
                 var result = new string[length];
+                if (_selectLabels == IntPtr.Zero) return result;
                 for (var i = 0; i < length; ++i)
                 {
                     var ptr = Marshal.ReadIntPtr(_selectLabels, i * IntPtr.Size);
